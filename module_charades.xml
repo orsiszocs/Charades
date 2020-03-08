@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_charades" default="compile.module.charades">
+  <dirname property="module.charades.basedir" file="${ant.file.module_charades}"/>
+  
+  <property name="module.jdk.home.charades" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.charades" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.charades" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.charades" value="-encoding UTF-8 -source 13 -target 13 ${compiler.args}"/>
+  
+  <property name="charades.output.dir" value="${module.charades.basedir}/out/production/Charades"/>
+  <property name="charades.testoutput.dir" value="${module.charades.basedir}/out/test/Charades"/>
+  
+  <path id="charades.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="charades.module.production.classpath">
+    <path refid="${module.jdk.classpath.charades}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="charades.runtime.production.module.classpath">
+    <pathelement location="${charades.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="charades.module.classpath">
+    <path refid="${module.jdk.classpath.charades}"/>
+    <pathelement location="${charades.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="charades.runtime.module.classpath">
+    <pathelement location="${charades.testoutput.dir}"/>
+    <pathelement location="${charades.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.charades">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.charades">
+    <patternset refid="excluded.from.module.charades"/>
+  </patternset>
+  
+  <path id="charades.module.sourcepath">
+    <dirset dir="${module.charades.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.charades" depends="compile.module.charades.production,compile.module.charades.tests" description="Compile module Charades"/>
+  
+  <target name="compile.module.charades.production" depends="register.custom.compilers" description="Compile module Charades; production classes">
+    <mkdir dir="${charades.output.dir}"/>
+    <javac2 destdir="${charades.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.charades}/javac">
+      <compilerarg line="${compiler.args.charades}"/>
+      <bootclasspath refid="charades.module.bootclasspath"/>
+      <classpath refid="charades.module.production.classpath"/>
+      <src refid="charades.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.charades"/>
+    </javac2>
+    
+    <copy todir="${charades.output.dir}">
+      <fileset dir="${module.charades.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.charades.tests" depends="register.custom.compilers,compile.module.charades.production" description="compile module Charades; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.charades" description="cleanup module">
+    <delete dir="${charades.output.dir}"/>
+    <delete dir="${charades.testoutput.dir}"/>
+  </target>
+</project>
